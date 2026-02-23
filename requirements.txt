@@ -1,0 +1,4 @@
+gymnasium
+torch
+ale-py; python_version < '3.13'
+numpy
