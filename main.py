@@ -55,6 +55,7 @@ def parse_args():
     parser.add_argument("--epsilon-decay-steps", type=int, default=EPSILON_DECAY_STEPS)
     parser.add_argument("--checkpoint-dir", default="checkpoints", help="Directory to save/load checkpoints")
     parser.add_argument("--save-every", type=int, default=1, help="Save checkpoint every N episodes")
+    parser.add_argument("--save-milestone-every", type=int, default=0, help="Save milestone checkpoints every N episodes (0=disabled)")
     parser.add_argument("--resume", action="store_true", help="Resume from latest checkpoint")
     parser.add_argument("--play", action="store_true", help="Play mode: load checkpoint and run episodes without training")
     parser.add_argument("--play-episodes", type=int, default=1, help="Number of episodes to play in play mode")
@@ -275,7 +276,7 @@ def optimize_model(memory, policy_net, target_net, criterion, optimizer):
     return float(loss.item())
 
 
-def train(checkpoint_dir="checkpoints", save_every=1, resume=False):
+def train(checkpoint_dir="checkpoints", save_every=1, save_milestone_every=0, resume=False):
     ensure_game_supported(GAME_ID)
     rom_path = prepare_local_rom_path(GAME_ID)
 
@@ -353,6 +354,11 @@ def train(checkpoint_dir="checkpoints", save_every=1, resume=False):
         # Save latest checkpoint
         if (episode + 1) % save_every == 0:
             save_checkpoint(checkpoint_dir, "latest.pt", policy_net, target_net, optimizer, episode, global_step, best_reward)
+
+        # Save milestone checkpoint
+        if save_milestone_every > 0 and (episode + 1) % save_milestone_every == 0:
+            milestone_filename = f"milestone_ep{episode + 1:06d}.pt"
+            save_checkpoint(checkpoint_dir, milestone_filename, policy_net, target_net, optimizer, episode, global_step, best_reward)
 
         # Save best checkpoint
         if episode_reward > best_reward:
@@ -437,4 +443,9 @@ if __name__ == "__main__":
             num_episodes=args.play_episodes,
         )
     else:
-        train(checkpoint_dir=args.checkpoint_dir, save_every=args.save_every, resume=args.resume)
+        train(
+            checkpoint_dir=args.checkpoint_dir,
+            save_every=args.save_every,
+            save_milestone_every=args.save_milestone_every,
+            resume=args.resume,
+        )

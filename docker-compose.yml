@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  train:
+    build: .
+    image: dqn-space-invaders
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./.roms:/app/.roms:ro
+    command: >
+      python main.py
+      --num-episodes 1000
+      --save-every 10
+      --save-milestone-every 100
+    restart: unless-stopped
+
+  # To resume training, use:
+  # docker-compose run --rm train python main.py --resume --num-episodes 1000
+
+  # To play best checkpoint:
+  # docker-compose run --rm train python main.py --play --play-checkpoint best.pt
