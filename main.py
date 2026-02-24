@@ -43,7 +43,7 @@ def parse_args():
     )
     parser.add_argument("--game-id", default=GAME_ID, help="ROM id, e.g. space_invaders")
     parser.add_argument("--num-episodes", type=int, default=NUM_EPISODES)
-    parser.add_argument("--max-steps", type=int, default=MAX_STEPS_PER_EPISODE)
+    parser.add_argument("--max-steps", type=int, default=MAX_STEPS_PER_EPISODE, help="Max steps per episode (0=unlimited)")
     parser.add_argument("--render-every", type=int, default=RENDER_EVERY)
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--gamma", type=float, default=GAMMA)
@@ -327,8 +327,10 @@ def train(checkpoint_dir="checkpoints", save_every=1, save_milestone_every=0, re
         episode_reward = 0.0
         done = False
         episode_steps = 0
+        epsilon = epsilon_by_step(global_step)
+        max_steps_limit = MAX_STEPS_PER_EPISODE if MAX_STEPS_PER_EPISODE > 0 else float("inf")
 
-        while not done and episode_steps < MAX_STEPS_PER_EPISODE:
+        while not done and episode_steps < max_steps_limit:
             epsilon = epsilon_by_step(global_step)
             action = select_action(state, epsilon, active_env, policy_net)
 

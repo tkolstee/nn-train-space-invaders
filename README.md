@@ -53,17 +53,16 @@ docker run --rm \
   -v "$(pwd)/.roms:/app/.roms:ro" \
   -v "$(pwd)/checkpoints:/app/checkpoints" \
   dqn-space-invaders \
-  python main.py \
-    --num-episodes 1000 \
-    --save-every 10 \
-    --save-milestone-every 100
+  --num-episodes 1000 \
+  --save-every 10 \
+  --save-milestone-every 100
 
 # Resume training from checkpoint
 docker run --rm \
   -v "$(pwd)/.roms:/app/.roms:ro" \
   -v "$(pwd)/checkpoints:/app/checkpoints" \
   dqn-space-invaders \
-  python main.py --resume --num-episodes 1000
+  --resume --num-episodes 1000
 ```
 
 ### View Progress
@@ -86,7 +85,7 @@ python main.py --play --play-checkpoint milestone_ep000500.pt
 ### Training Options
 - `--game-id` - ROM id (default: space_invaders)
 - `--num-episodes` - Number of episodes to train (default: 500)
-- `--max-steps` - Max steps per episode (default: 20000)
+- `--max-steps` - Max steps per episode (default: 20000, `0` = unlimited/run until game over)
 - `--resume` - Resume from latest checkpoint
 
 ### Checkpoint Options
@@ -126,10 +125,9 @@ docker run -d --name dqn-train \
   -v "$(pwd)/.roms:/app/.roms:ro" \
   -v "$(pwd)/checkpoints:/app/checkpoints" \
   dqn-space-invaders \
-  python main.py \
-    --num-episodes 10000 \
-    --save-every 10 \
-    --save-milestone-every 500
+  --num-episodes 10000 \
+  --save-every 10 \
+  --save-milestone-every 500
 
 # Check progress
 docker logs dqn-train

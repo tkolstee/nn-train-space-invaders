@@ -22,5 +22,8 @@ RUN mkdir -p .roms checkpoints
 # The checkpoints directory will be bind-mounted
 VOLUME ["/app/checkpoints"]
 
-# Default command: run training with checkpoints saved to bind-mounted volume
-CMD ["python", "main.py", "--checkpoint-dir", "/app/checkpoints"]
+# Presuppose Python entrypoint; allow runtime args to append naturally
+ENTRYPOINT ["python", "./main.py"]
+
+# Default args (can be overridden or extended at runtime)
+CMD ["--checkpoint-dir", "/app/checkpoints"]
